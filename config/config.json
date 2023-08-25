@@ -1,0 +1,7 @@
+{
+    "db_username": "postgres",
+    "db_password": "g00dst4rt",
+    "db_host": "localhost",
+    "db_port": 5432,
+    "db_name": "crud_echo"
+}
