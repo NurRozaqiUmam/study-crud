@@ -52,6 +52,13 @@ func (sc *StudentController) GetStudent(c echo.Context) error {
 // UpdateStudent, method yang mengupdate data student berdasarkan ID dan data yang diberikan dalam request body
 func (sc *StudentController) UpdateStudent(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
+
+	// memeriksa apakah student dengan ID yang diberikan ada, dengan melakukan pengecekan terlebih dahulu dengan memanggil funsi GetStudent sebelum memanggil UpdateStudent
+	_, err := sc.StudentUsecase.GetStudent(id)
+	if err != nil {
+		return response.SetResponse(c, http.StatusNotFound, "failed to update, id student not found", nil)
+	}
+
 	var studentdto dto.StudentDTO
 	if err := c.Bind(&studentdto); err != nil {
 		return response.SetResponse(c, http.StatusBadRequest, "bad request", nil)
@@ -62,7 +69,7 @@ func (sc *StudentController) UpdateStudent(c echo.Context) error {
 	if err := sc.StudentUsecase.UpdateStudent(id, studentdto); err != nil {
 		return response.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
 	}
-	return response.SetResponse(c, http.StatusOK, "success update student", nil)
+	return response.SetResponse(c, http.StatusOK, "success update student by id", nil)
 }
 
 // DeletetStudent, method yang mendelete data student berdasarkan ID
