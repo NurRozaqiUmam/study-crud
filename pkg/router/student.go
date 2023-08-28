@@ -3,6 +3,7 @@ package router
 import (
 	"database/sql"
 	"echo_crud/pkg/controller"
+	"echo_crud/pkg/middleware"
 	"echo_crud/pkg/repository"
 	"echo_crud/pkg/usecase"
 
@@ -21,9 +22,10 @@ func NewStudentRouter(e *echo.Echo, g *echo.Group, db *sql.DB) {
 	}
 
 	// Mengatur rute HTTP menggunakan Echo untuk mendefinisikan endpoint
-	e.POST("/student", sc.CreateStudent)       // POST /student, memanggil fungsi CreateStudent di StudentController untuk membuat data baru
-	e.GET("/student", sc.GetStudents)          // GET /student, memanggil fungsi GetStudents di StudentController
-	e.GET("/student/:id", sc.GetStudent)       // GET /student/:id, memanggil fungsi GetStudent di StudentController dengan parameter ID
-	e.PUT("/student/:id", sc.UpdateStudent)    // PUT /student/:id, memanggil fungsi UpdateStudent di StudentController dengan parameter ID
-	e.DELETE("/student/:id", sc.DeleteStudent) // DELETE /student/:id, memanggil fungsi DeleteStudent di StudentController dengan parameter ID
+	e.POST("/student", sc.CreateStudent)                                   // POST /student, memanggil fungsi CreateStudent di StudentController untuk membuat data baru
+	e.GET("/student", sc.GetStudents, middleware.IsAuthenticated)          // GET /student, memanggil fungsi GetStudents di StudentController
+	e.GET("/student/:id", sc.GetStudent, middleware.IsAuthenticated)       // GET /student/:id, memanggil fungsi GetStudent di StudentController dengan parameter ID
+	e.PUT("/student/:id", sc.UpdateStudent, middleware.IsAuthenticated)    // PUT /student/:id, memanggil fungsi UpdateStudent di StudentController dengan parameter ID
+	e.DELETE("/student/:id", sc.DeleteStudent, middleware.IsAuthenticated) // DELETE /student/:id, memanggil fungsi DeleteStudent di StudentController dengan parameter ID
+	e.POST("/login", controller.CheckLogin)
 }

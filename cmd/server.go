@@ -19,5 +19,6 @@ func RunServer() {
 // Apply, fungsi yang mengaplikasikan konfigurasi rute-rute dalam Echo framework
 func Apply(e *echo.Echo, g *echo.Group) {
 	db := db.NewInstanceDb()          // membuat instance dari database yang akan digunakan
+	router.NewUserRouter(e, g, db)    // memanggil fungsi NewUserRouter untuk mengonfigurasi rute terkait user
 	router.NewStudentRouter(e, g, db) // memanggil fungsi NewStudentRouter untuk mengonfigurasi rute terkait student
 }

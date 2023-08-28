@@ -74,10 +74,22 @@ func (sc *StudentController) UpdateStudent(c echo.Context) error {
 
 // DeletetStudent, method yang mendelete data student berdasarkan ID
 func (sc *StudentController) DeleteStudent(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	err := sc.StudentUsecase.DeleteStudent(id)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return response.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
+	}
+
+	// Memeriksa apakah pengguna dengan ID yang diberikan ada di dalam database
+	_, err = sc.StudentUsecase.GetStudent(id)
+	if err != nil {
+		return response.SetResponse(c, http.StatusNotFound, "failed to delete, id student not found", nil)
+	}
+
+	// Melakukan operasi penghapusan
+	err = sc.StudentUsecase.DeleteStudent(id)
 	if err != nil {
 		return response.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
 	}
-	return response.SetResponse(c, http.StatusOK, "success delete student", nil)
+
+	return response.SetResponse(c, http.StatusOK, "success delete user", nil)
 }
