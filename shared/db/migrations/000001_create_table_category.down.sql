@@ -1,0 +1,2 @@
+-- Down migration: drop the category table
+-- DROP TABLE IF EXISTS category;
