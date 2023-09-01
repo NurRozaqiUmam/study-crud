@@ -11,6 +11,19 @@ type UserDTO struct {
 	Address  string `json:"address"`
 }
 
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	Id       int    `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Address  string `json:"address"`
+	Token    string `json:"token"`
+}
+
 // Validation, method yang digunakan untuk melakukan validasi pada data yang ada dalam UserDTO
 func (u UserDTO) Validation() error {
 	// menggunakan package "validation" untuk melakukan validasi terstruktur pada field dalam UserDTO

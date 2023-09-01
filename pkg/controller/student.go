@@ -3,7 +3,7 @@ package controller
 import (
 	"echo_crud/pkg/domain"
 	"echo_crud/pkg/dto"
-	"echo_crud/shared/response"
+	"echo_crud/shared/util"
 	"net/http"
 	"strconv"
 
@@ -17,79 +17,78 @@ type StudentController struct {
 
 // CreateStudent, method yang membuat data student baru berdasarkan data yang diberikan dalam request body
 func (sc *StudentController) CreateStudent(c echo.Context) error {
-	var studentdto dto.StudentDTO
-	if err := c.Bind(&studentdto); err != nil {
-		return response.SetResponse(c, http.StatusBadRequest, "bad request", nil)
+	var request dto.StudentDTO
+	if err := c.Bind(&request); err != nil {
+		return util.SetResponse(c, http.StatusBadRequest, "bad request", nil)
 	}
-	if err := studentdto.Validation(); err != nil {
-		return response.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
+
+	if err := request.Validation(); err != nil {
+		return util.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
 	}
-	if err := sc.StudentUsecase.CreateStudent(studentdto); err != nil {
-		return response.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
+
+	if err := sc.StudentUsecase.CreateStudent(request); err != nil {
+		return util.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
 	}
-	return response.SetResponse(c, http.StatusOK, "success added new student", nil)
+	return util.SetResponse(c, http.StatusOK, "success", nil)
 }
 
 // GetStudents, method yang mengambil daftar student dari usecase dan mengembalikan respons HTTP
-func (sc *StudentController) GetStudents(c echo.Context) error {
-	resp, err := sc.StudentUsecase.GetStudents()
+func (sc *StudentController) GetStudent(c echo.Context) error {
+	resp, err := sc.StudentUsecase.GetStudent()
 	if err != nil {
-		return response.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
+		return util.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
 	}
-	return response.SetResponse(c, http.StatusOK, "success search student", resp)
+	return util.SetResponse(c, http.StatusOK, "success", resp)
 }
 
 // GetStudent, method yang mengambil data student berdasarkan ID dari usecase dan mengembalikan respons HTTP
-func (sc *StudentController) GetStudent(c echo.Context) error {
+func (sc *StudentController) GetStudentById(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	resp, err := sc.StudentUsecase.GetStudent(id)
+	resp, err := sc.StudentUsecase.GetStudentById(id)
+
 	if err != nil {
-		return response.SetResponse(c, http.StatusNotFound, "id student not found", nil)
+		return util.SetResponse(c, http.StatusNotFound, "student id not found", nil)
 	}
-	return response.SetResponse(c, http.StatusOK, "success search by id", resp)
+	return util.SetResponse(c, http.StatusOK, "success", resp)
 }
 
 // UpdateStudent, method yang mengupdate data student berdasarkan ID dan data yang diberikan dalam request body
 func (sc *StudentController) UpdateStudent(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+	var request dto.StudentDTO
 
-	// memeriksa apakah student dengan ID yang diberikan ada, dengan melakukan pengecekan terlebih dahulu dengan memanggil funsi GetStudent sebelum memanggil UpdateStudent
-	_, err := sc.StudentUsecase.GetStudent(id)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return response.SetResponse(c, http.StatusNotFound, "failed to update, id student not found", nil)
+		return util.SetResponse(c, http.StatusBadRequest, "bad request", nil)
 	}
 
-	var studentdto dto.StudentDTO
-	if err := c.Bind(&studentdto); err != nil {
-		return response.SetResponse(c, http.StatusBadRequest, "bad request", nil)
+	_, err = sc.StudentUsecase.GetStudentById(id)
+	if err != nil {
+		return util.SetResponse(c, http.StatusNotFound, "student not found", nil)
 	}
-	if err := studentdto.Validation(); err != nil {
-		return response.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
+
+	if err := c.Bind(&request); err != nil {
+		return util.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
 	}
-	if err := sc.StudentUsecase.UpdateStudent(id, studentdto); err != nil {
-		return response.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
+
+	if err := request.Validation(); err != nil {
+		return util.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
 	}
-	return response.SetResponse(c, http.StatusOK, "success update student by id", nil)
+
+	if err := sc.StudentUsecase.UpdateStudent(id, request); err != nil {
+		return util.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
+	}
+	return util.SetResponse(c, http.StatusOK, "success", nil)
 }
 
 // DeletetStudent, method yang mendelete data student berdasarkan ID
 func (sc *StudentController) DeleteStudent(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("id"))
+	_, err := sc.StudentUsecase.GetStudentById(id)
 	if err != nil {
-		return response.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
+		return util.SetResponse(c, http.StatusNotFound, "id not found", nil)
 	}
-
-	// Memeriksa apakah pengguna dengan ID yang diberikan ada di dalam database
-	_, err = sc.StudentUsecase.GetStudent(id)
-	if err != nil {
-		return response.SetResponse(c, http.StatusNotFound, "failed to delete, id student not found", nil)
+	if err := sc.StudentUsecase.DeleteStudentById(id); err != nil {
+		return util.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
 	}
-
-	// Melakukan operasi penghapusan
-	err = sc.StudentUsecase.DeleteStudent(id)
-	if err != nil {
-		return response.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
-	}
-
-	return response.SetResponse(c, http.StatusOK, "success delete user", nil)
+	return util.SetResponse(c, http.StatusOK, "success", nil)
 }

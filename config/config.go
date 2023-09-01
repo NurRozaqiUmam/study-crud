@@ -8,6 +8,7 @@ type Configuration struct {
 	DBHost     string `json:"db_host"`
 	DBPort     int    `json:"db_port"`
 	DBName     string `json:"db_name"`
+	SignKey    string `json:"sign_key"`
 }
 
 var conf Configuration

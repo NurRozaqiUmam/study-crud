@@ -3,7 +3,7 @@ package controller
 import (
 	"echo_crud/pkg/domain"
 	"echo_crud/pkg/dto"
-	"echo_crud/shared/response"
+	"echo_crud/shared/util"
 	"net/http"
 	"strconv"
 
@@ -17,79 +17,90 @@ type UserController struct {
 
 // CreateUser, method yang membuat data user baru berdasarkan data yang diberikan dalam request body
 func (uc *UserController) CreateUser(c echo.Context) error {
-	var userdto dto.UserDTO
-	if err := c.Bind(&userdto); err != nil {
-		return response.SetResponse(c, http.StatusBadRequest, "bad request", nil)
+	var request dto.UserDTO
+	if err := c.Bind(&request); err != nil {
+		return util.SetResponse(c, http.StatusBadRequest, "bad request", nil)
 	}
-	if err := userdto.Validation(); err != nil {
-		return response.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
+
+	if err := request.Validation(); err != nil {
+		return util.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
 	}
-	if err := uc.UserUsecase.CreateUser(userdto); err != nil {
-		return response.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
+
+	if err := uc.UserUsecase.CreateUser(request); err != nil {
+		return util.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
 	}
-	return response.SetResponse(c, http.StatusOK, "user created successfully", nil)
+	return util.SetResponse(c, http.StatusOK, "success added user", nil)
 }
 
 // GetUser, method yang mengambil daftar user dari usecase dan mengembalikan respons HTTP
 func (uc *UserController) GetUsers(c echo.Context) error {
 	resp, err := uc.UserUsecase.GetUsers()
 	if err != nil {
-		return response.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
+		return util.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
 	}
-	return response.SetResponse(c, http.StatusOK, "success search user", resp)
+	return util.SetResponse(c, http.StatusOK, "success view all user", resp)
 }
 
 // GetSUser, method yang mengambil data user berdasarkan ID dari usecase dan mengembalikan respons HTTP
-func (uc *UserController) GetUser(c echo.Context) error {
+func (uc *UserController) GetUserById(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	resp, err := uc.UserUsecase.GetUser(id)
+	resp, err := uc.UserUsecase.GetUserById(id)
+
 	if err != nil {
-		return response.SetResponse(c, http.StatusNotFound, "id user not found", nil)
+		return util.SetResponse(c, http.StatusNotFound, "id user not found", nil)
 	}
-	return response.SetResponse(c, http.StatusOK, "success search user by id", resp)
+	return util.SetResponse(c, http.StatusOK, "success search user by id", resp)
 }
 
 // UpdateUser, method yang mengupdate data user berdasarkan ID dan data yang diberikan dalam request body
 func (uc *UserController) UpdateUser(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+	var request dto.UserDTO
 
-	// memeriksa apakah user dengan ID yang diberikan ada, dengan melakukan pengecekan terlebih dahulu dengan memanggil fungsi GetUser sebelum memanggil UpdateUser
-	_, err := uc.UserUsecase.GetUser(id)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return response.SetResponse(c, http.StatusNotFound, "failed to update, id user not found", nil)
+		return util.SetResponse(c, http.StatusBadRequest, "bad request", nil)
 	}
 
-	var userdto dto.UserDTO
-	if err := c.Bind(&userdto); err != nil {
-		return response.SetResponse(c, http.StatusBadRequest, "bad request", nil)
+	_, err = uc.UserUsecase.GetUserById(id)
+	if err != nil {
+		return util.SetResponse(c, http.StatusNotFound, "failed to update, user not found", nil)
 	}
-	if err := userdto.Validation(); err != nil {
-		return response.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
+
+	if err := c.Bind(&request); err != nil {
+		return util.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
 	}
-	if err := uc.UserUsecase.UpdateUser(id, userdto); err != nil {
-		return response.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
+
+	if err := request.Validation(); err != nil {
+		return util.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
 	}
-	return response.SetResponse(c, http.StatusOK, "success update user by id", nil)
+
+	if err := uc.UserUsecase.UpdateUser(id, request); err != nil {
+		return util.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
+	}
+	return util.SetResponse(c, http.StatusOK, "success update", nil)
 }
 
 // DeletetUser, method yang mendelete data user berdasarkan ID
 func (uc *UserController) DeleteUser(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("id"))
+	_, err := uc.UserUsecase.GetUserById(id)
 	if err != nil {
-		return response.SetResponse(c, http.StatusBadRequest, err.Error(), nil)
+		return util.SetResponse(c, http.StatusNotFound, "failed to delete, user not found", nil)
 	}
+	if err := uc.UserUsecase.DeleteUserById(id); err != nil {
+		return util.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
+	}
+	return util.SetResponse(c, http.StatusOK, "success delete", nil)
+}
 
-	// Memeriksa apakah user dengan ID yang diberikan ada di dalam database
-	_, err = uc.UserUsecase.GetUser(id)
+func (uc *UserController) Login(c echo.Context) error {
+	var request dto.LoginRequest
+	if err := c.Bind(&request); err != nil {
+		return util.SetResponse(c, http.StatusBadRequest, "bad request", nil)
+	}
+	resp, err := uc.UserUsecase.UserLogin(request)
 	if err != nil {
-		return response.SetResponse(c, http.StatusNotFound, "failed to delete, id user not found", nil)
+		return util.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
 	}
-
-	// Melakukan operasi penghapusan
-	err = uc.UserUsecase.DeleteUser(id)
-	if err != nil {
-		return response.SetResponse(c, http.StatusInternalServerError, err.Error(), nil)
-	}
-
-	return response.SetResponse(c, http.StatusOK, "success delete user", nil)
+	return util.SetResponse(c, http.StatusOK, "success login", resp)
 }

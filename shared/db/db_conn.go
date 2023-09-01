@@ -8,9 +8,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func NewInstanceDb() *sql.DB {
+func NewInstanceDb(conf config.Configuration) *sql.DB {
 	// mengambil konfigurasi database dari package config
-	conf := config.GetConfig()
 
 	// membuka koneksi baru ke database PostgreSQL dengan menggunakan informasi konfigurasi
 	db, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", conf.DBHost, conf.DBPort, conf.DBUsername, conf.DBPassword, conf.DBName))

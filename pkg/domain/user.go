@@ -14,17 +14,19 @@ type User struct {
 // UserRepository, interface yang mendefinisikan operasi-operasi terhadap data user di dalam database
 type UserRepository interface {
 	CreateUser(req User) error
-	GetUsers() ([]User, error)
-	GetUser(id int) (User, error)
 	UpdateUser(id int, req User) error
-	DeleteUser(id int) error
+	GetUsers() ([]User, error)
+	GetUserById(id int) (User, error)
+	DeleteUserById(id int) error
+	FindByEmail(email string) (User, error)
 }
 
 // UserUsecase, interface yang mendefinisikan operasi-operasi terkait user
 type UserUsecase interface {
 	CreateUser(req dto.UserDTO) error
-	GetUsers() ([]User, error)
-	GetUser(id int) (User, error)
 	UpdateUser(id int, req dto.UserDTO) error
-	DeleteUser(id int) error
+	GetUsers() ([]User, error)
+	GetUserById(id int) (User, error)
+	DeleteUserById(id int) error
+	UserLogin(req dto.LoginRequest) (interface{}, error)
 }

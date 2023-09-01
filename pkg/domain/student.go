@@ -16,17 +16,17 @@ type Student struct {
 // StudentRepository, interface yang mendefinisikan operasi-operasi terhadap data student di dalam database
 type StudentRepository interface {
 	CreateStudent(req Student) error
-	GetStudents() ([]Student, error)
-	GetStudent(id int) (Student, error)
 	UpdateStudent(id int, req Student) error
-	DeleteStudent(id int) error
+	GetStudent() ([]Student, error)
+	GetStudentById(id int) (Student, error)
+	DeleteStudentById(id int) error
 }
 
 // StudentUsecase, interface yang mendefinisikan operasi-operasi terkait student
 type StudentUsecase interface {
 	CreateStudent(req dto.StudentDTO) error
-	GetStudents() ([]Student, error)
-	GetStudent(id int) (Student, error)
 	UpdateStudent(id int, req dto.StudentDTO) error
-	DeleteStudent(id int) error
+	GetStudent() ([]Student, error)
+	GetStudentById(id int) (Student, error)
+	DeleteStudentById(id int) error
 }
