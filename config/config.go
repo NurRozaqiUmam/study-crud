@@ -2,6 +2,7 @@ package config
 
 import "github.com/tkanos/gonfig"
 
+// configuration, struct yang menyimpan konfigurasi dari aplikasi
 type Configuration struct {
 	DBUsername string `json:"db_username"`
 	DBPassword string `json:"db_password"`
