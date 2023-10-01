@@ -15,7 +15,16 @@ type StudentController struct {
 	StudentUsecase domain.StudentUsecase
 }
 
-// CreateStudent, method yang membuat data student baru berdasarkan data yang diberikan dalam request body
+// @Tags STUDENT
+// @Summary Create a new student
+// @Description Create a new student with the given details
+// @Accept json
+// @Produce json
+// @Param request body dto.StudentDTO true "Create Student"
+// @Security BearerAuth
+// @Success 200 {object} util.JsonReponse{message=string}
+// @Failure 500 {object} util.JsonReponse{message=string}
+// @Router /student [post]
 func (sc *StudentController) CreateStudent(c echo.Context) error {
 	var request dto.StudentDTO
 	if err := c.Bind(&request); err != nil {
@@ -32,7 +41,15 @@ func (sc *StudentController) CreateStudent(c echo.Context) error {
 	return util.SetResponse(c, http.StatusOK, "success", nil)
 }
 
-// GetStudents, method yang mengambil daftar student dari usecase dan mengembalikan respons HTTP
+// @Tags STUDENT
+// @Summary Get all students
+// @Description Get all students
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} util.JsonReponse
+// @Failure 500 {object} util.JsonReponse
+// @Router /student [get]
 func (sc *StudentController) GetStudent(c echo.Context) error {
 	resp, err := sc.StudentUsecase.GetStudent()
 	if err != nil {
@@ -41,7 +58,16 @@ func (sc *StudentController) GetStudent(c echo.Context) error {
 	return util.SetResponse(c, http.StatusOK, "success", resp)
 }
 
-// GetStudent, method yang mengambil data student berdasarkan ID dari usecase dan mengembalikan respons HTTP
+// @Tags STUDENT
+// @Summary Get student by id
+// @Description Get student by id
+// @Accept json
+// @Produce json
+// @Param id path int true "Student ID"
+// @Security BearerAuth
+// @Success 200 {object} util.JsonReponse
+// @Failure 500 {object} util.JsonReponse
+// @Router /student/{id} [get]
 func (sc *StudentController) GetStudentById(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	resp, err := sc.StudentUsecase.GetStudentById(id)
@@ -52,7 +78,17 @@ func (sc *StudentController) GetStudentById(c echo.Context) error {
 	return util.SetResponse(c, http.StatusOK, "success", resp)
 }
 
-// UpdateStudent, method yang mengupdate data student berdasarkan ID dan data yang diberikan dalam request body
+// @Tags STUDENT
+// @Summary Update student
+// @Description Update student with the given details
+// @Accept json
+// @Produce json
+// @Param id path int true "Student ID"
+// @Param request body dto.StudentDTO true "Update Student"
+// @Security BearerAuth
+// @Success 200 {object} util.JsonReponse{message=string}
+// @Failure 500 {object} util.JsonReponse{message=string}
+// @Router /student/{id} [put]
 func (sc *StudentController) UpdateStudent(c echo.Context) error {
 	var request dto.StudentDTO
 
@@ -80,7 +116,16 @@ func (sc *StudentController) UpdateStudent(c echo.Context) error {
 	return util.SetResponse(c, http.StatusOK, "success", nil)
 }
 
-// DeletetStudent, method yang mendelete data student berdasarkan ID
+// @Tags STUDENT
+// @Summary Delete student
+// @Description Delete student with the given details
+// @Accept json
+// @Produce json
+// @Param id path int true "Student ID"
+// @Security BearerAuth
+// @Success 200 {object} util.JsonReponse{message=string}
+// @Failure 500 {object} util.JsonReponse{message=string}
+// @Router /student/{id} [delete]
 func (sc *StudentController) DeleteStudent(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	_, err := sc.StudentUsecase.GetStudentById(id)

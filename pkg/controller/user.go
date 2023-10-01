@@ -15,7 +15,15 @@ type UserController struct {
 	UserUsecase domain.UserUsecase
 }
 
-// CreateUser, method yang membuat data user baru berdasarkan data yang diberikan dalam request body
+// @Tags USER
+// @Summary Create a new user
+// @Description Create a new user with the given details
+// @Accept json
+// @Produce json
+// @Param request body dto.UserDTO true "Create User"
+// @Success 200 {object} util.JsonReponse{message=string}
+// @Failure 500 {object} util.JsonReponse{message=string}
+// @Router /register [post]
 func (uc *UserController) CreateUser(c echo.Context) error {
 	var request dto.UserDTO
 	if err := c.Bind(&request); err != nil {
@@ -32,7 +40,15 @@ func (uc *UserController) CreateUser(c echo.Context) error {
 	return util.SetResponse(c, http.StatusOK, "success added user", nil)
 }
 
-// GetUser, method yang mengambil daftar user dari usecase dan mengembalikan respons HTTP
+// @Tags USER
+// @Summary Get all users
+// @Description Get all users
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} util.JsonReponse
+// @Failure 500 {object} util.JsonReponse
+// @Router /user [get]
 func (uc *UserController) GetUsers(c echo.Context) error {
 	resp, err := uc.UserUsecase.GetUsers()
 	if err != nil {
@@ -41,7 +57,16 @@ func (uc *UserController) GetUsers(c echo.Context) error {
 	return util.SetResponse(c, http.StatusOK, "success view all user", resp)
 }
 
-// GetSUser, method yang mengambil data user berdasarkan ID dari usecase dan mengembalikan respons HTTP
+// @Tags USER
+// @Summary Get user by id
+// @Description Get user by id
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Security BearerAuth
+// @Success 200 {object} util.JsonReponse
+// @Failure 404 {object} util.JsonReponse
+// @Router /user/{id} [get]
 func (uc *UserController) GetUserById(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	resp, err := uc.UserUsecase.GetUserById(id)
@@ -52,7 +77,17 @@ func (uc *UserController) GetUserById(c echo.Context) error {
 	return util.SetResponse(c, http.StatusOK, "success search user by id", resp)
 }
 
-// UpdateUser, method yang mengupdate data user berdasarkan ID dan data yang diberikan dalam request body
+// @Tags USER
+// @Summary Update user by id
+// @Description Update user by id
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+//
+// @Security BearerAuth
+// @Success 200 {object} util.JsonReponse
+// @Failure 400 {object} util.JsonReponse
+// @Router /user/{id} [put]
 func (uc *UserController) UpdateUser(c echo.Context) error {
 	var request dto.UserDTO
 
@@ -80,7 +115,16 @@ func (uc *UserController) UpdateUser(c echo.Context) error {
 	return util.SetResponse(c, http.StatusOK, "success update", nil)
 }
 
-// DeletetUser, method yang mendelete data user berdasarkan ID
+// @Tags USER
+// @Summary Delete user by id
+// @Description Delete user by id
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Security BearerAuth
+// @Success 200 {object} util.JsonReponse
+// @Failure 404 {object} util.JsonReponse
+// @Router /user/{id} [delete]
 func (uc *UserController) DeleteUser(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	_, err := uc.UserUsecase.GetUserById(id)
@@ -93,6 +137,15 @@ func (uc *UserController) DeleteUser(c echo.Context) error {
 	return util.SetResponse(c, http.StatusOK, "success delete", nil)
 }
 
+// @Tags USER
+// @Summary Login user
+// @Description Login user
+// @Accept json
+// @Produce json
+// @Param request body dto.LoginRequest true "Login User"
+// @Success 200 {object} util.JsonReponse
+// @Failure 400 {object} util.JsonReponse
+// @Router /login [post]
 func (uc *UserController) Login(c echo.Context) error {
 	var request dto.LoginRequest
 	if err := c.Bind(&request); err != nil {

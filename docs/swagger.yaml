@@ -1,0 +1,394 @@
+definitions:
+  dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.StudentDTO:
+    properties:
+      address:
+        type: string
+      batch:
+        type: integer
+      birthdate:
+        type: string
+      class:
+        type: string
+      fullname:
+        description: field dalam StudentDTO yang akan dikirimkan melalui JSON dalam
+          permintaan HTTP
+        type: string
+      school_name:
+        type: string
+    type: object
+  dto.UserDTO:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        description: field dalam UserDTO yang akan dikirimkan melalui JSON dalam permintaan
+          HTTP
+        type: string
+    type: object
+  util.JsonReponse:
+    properties:
+      code:
+        description: Kode status HTTP dalam respons
+        type: integer
+      data:
+        description: data yang akan disertakan dalam respons
+      message:
+        description: pesan yang menjelaskan respons
+        type: string
+    type: object
+host: localhost:9090
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is swagger api
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: SWAGGER API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login user
+      parameters:
+      - description: Login User
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+      summary: Login user
+      tags:
+      - USER
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the given details
+      parameters:
+      - description: Create User
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/util.JsonReponse'
+            - properties:
+                message:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/util.JsonReponse'
+            - properties:
+                message:
+                  type: string
+              type: object
+      summary: Create a new user
+      tags:
+      - USER
+  /student:
+    get:
+      consumes:
+      - application/json
+      description: Get all students
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+      security:
+      - BearerAuth: []
+      summary: Get all students
+      tags:
+      - STUDENT
+    post:
+      consumes:
+      - application/json
+      description: Create a new student with the given details
+      parameters:
+      - description: Create Student
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StudentDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/util.JsonReponse'
+            - properties:
+                message:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/util.JsonReponse'
+            - properties:
+                message:
+                  type: string
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new student
+      tags:
+      - STUDENT
+  /student/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete student with the given details
+      parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/util.JsonReponse'
+            - properties:
+                message:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/util.JsonReponse'
+            - properties:
+                message:
+                  type: string
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Delete student
+      tags:
+      - STUDENT
+    get:
+      consumes:
+      - application/json
+      description: Get student by id
+      parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+      security:
+      - BearerAuth: []
+      summary: Get student by id
+      tags:
+      - STUDENT
+    put:
+      consumes:
+      - application/json
+      description: Update student with the given details
+      parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Student
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StudentDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/util.JsonReponse'
+            - properties:
+                message:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/util.JsonReponse'
+            - properties:
+                message:
+                  type: string
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Update student
+      tags:
+      - STUDENT
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+      security:
+      - BearerAuth: []
+      summary: Get all users
+      tags:
+      - USER
+  /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+      security:
+      - BearerAuth: []
+      summary: Delete user by id
+      tags:
+      - USER
+    get:
+      consumes:
+      - application/json
+      description: Get user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+      security:
+      - BearerAuth: []
+      summary: Get user by id
+      tags:
+      - USER
+    put:
+      consumes:
+      - application/json
+      description: Update user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.JsonReponse'
+      security:
+      - BearerAuth: []
+      summary: Update user by id
+      tags:
+      - USER
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

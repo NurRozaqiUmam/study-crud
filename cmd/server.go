@@ -6,6 +6,8 @@ import (
 	"echo_crud/shared/db"
 	"fmt"
 
+	_ "echo_crud/docs"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -37,12 +39,13 @@ func RunServer() {
 		},
 	}))
 	Apply(e, g, conf)
-	e.Logger.Error(e.Start(":5000"))
+	e.Logger.Error(e.Start(":9090"))
 }
 
 // Apply, fungsi yang mengaplikasikan konfigurasi rute-rute dalam Echo framework
 func Apply(e *echo.Echo, g *echo.Group, conf config.Configuration) {
 	db := db.NewInstanceDb(conf)      // membuat instance dari database yang akan digunakan
+	router.NewSwaggerRouter(e, g, db) // memanggil fungsi NewSwaggerRouter untuk mengonfigurasi rute terkait swagger
 	router.NewUserRouter(e, g, db)    // memanggil fungsi NewUserRouter untuk mengonfigurasi rute terkait user
 	router.NewStudentRouter(e, g, db) // memanggil fungsi NewStudentRouter untuk mengonfigurasi rute terkait student
 }
